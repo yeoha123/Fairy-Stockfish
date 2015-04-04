@@ -743,3 +743,5 @@ inline int dist(Direction d) {
 }
 
 #endif // #ifndef TYPES_H_INCLUDED
+
+#include "tune.h" // Global visibility to tuning setup
