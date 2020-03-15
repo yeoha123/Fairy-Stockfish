@@ -169,6 +169,7 @@ public:
   int count_in_hand(Color c, PieceType pt) const;
   int count_with_hand(Color c, PieceType pt) const;
   bool bikjang() const;
+  bool virtual_drop(Color c, PieceType pt) const;
 
   // Position representation
   Bitboard pieces() const;
@@ -1071,6 +1072,12 @@ inline int Position::count_with_hand(Color c, PieceType pt) const {
 
 inline bool Position::bikjang() const {
   return st->bikjang;
+}
+
+inline bool Position::virtual_drop(Color c, PieceType pt) const {
+  assert(two_boards());
+  // Do we allow a virtual drop?
+  return pt != KING && count_in_hand(c, pt) >= -1;
 }
 
 inline void Position::add_to_hand(Piece pc) {
