@@ -169,7 +169,7 @@ public:
   int count_in_hand(Color c, PieceType pt) const;
   int count_with_hand(Color c, PieceType pt) const;
   bool bikjang() const;
-  bool virtual_drop(Color c, PieceType pt) const;
+  bool allow_virtual_drop(Color c, PieceType pt) const;
 
   // Position representation
   Bitboard pieces() const;
@@ -218,6 +218,7 @@ public:
   // Properties of moves
   bool legal(Move m) const;
   bool pseudo_legal(const Move m) const;
+  bool virtual_drop(Move m) const;
   bool capture(Move m) const;
   bool capture_or_promotion(Move m) const;
   bool gives_check(Move m) const;
@@ -1008,6 +1009,11 @@ inline bool Position::capture(Move m) const {
   return (!empty(to_sq(m)) && type_of(m) != CASTLING && from_sq(m) != to_sq(m)) || type_of(m) == ENPASSANT;
 }
 
+inline bool Position::virtual_drop(Move m) const {
+  assert(is_ok(m));
+  return type_of(m) == DROP && count_in_hand(side_to_move(), in_hand_piece_type(m)) <= 0;
+}
+
 inline Piece Position::captured_piece() const {
   return st->capturedPiece;
 }
@@ -1086,7 +1092,7 @@ inline bool Position::bikjang() const {
   return st->bikjang;
 }
 
-inline bool Position::virtual_drop(Color c, PieceType pt) const {
+inline bool Position::allow_virtual_drop(Color c, PieceType pt) const {
   assert(two_boards());
   // Do we allow a virtual drop?
   return pt != KING && count_in_hand(c, pt) >= -1;
@@ -1105,7 +1111,7 @@ inline void Position::remove_from_hand(Piece pc) {
 }
 
 inline void Position::drop_piece(Piece pc_hand, Piece pc_drop, Square s) {
-  assert(pieceCountInHand[color_of(pc_hand)][type_of(pc_hand)]);
+  assert(pieceCountInHand[color_of(pc_hand)][type_of(pc_hand)] || var->twoBoards);
   put_piece(pc_drop, s, pc_drop != pc_hand, pc_drop != pc_hand ? pc_hand : NO_PIECE);
   remove_from_hand(pc_hand);
 }
@@ -1114,7 +1120,7 @@ inline void Position::undrop_piece(Piece pc_hand, Piece pc_drop, Square s) {
   remove_piece(pc_drop, s);
   board[s] = NO_PIECE;
   add_to_hand(pc_hand);
-  assert(pieceCountInHand[color_of(pc_hand)][type_of(pc_hand)]);
+  assert(pieceCountInHand[color_of(pc_hand)][type_of(pc_hand)] || var->twoBoards);
 }
 
 #endif // #ifndef POSITION_H_INCLUDED
