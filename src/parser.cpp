@@ -240,6 +240,7 @@ Variant* VariantParser<DoCheck>::parse(Variant* v) {
     parse_attribute("immobilityIllegal", v->immobilityIllegal);
     parse_attribute("gating", v->gating);
     parse_attribute("seirawanGating", v->seirawanGating);
+    parse_attribute("commitGates", v->commitGates);
     parse_attribute("cambodianMoves", v->cambodianMoves);
     parse_attribute("diagonalLines", v->diagonalLines);
     parse_attribute("kingPass", v->kingPass);

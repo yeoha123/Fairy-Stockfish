@@ -349,7 +349,7 @@ Position& Position::set(const Variant* v, const string& fenStr, bool isChess960,
               continue;
 
           // Set gates (and skip castling rights)
-          if (gating())
+          if (gating() && !commit_gates())
           {
               st->gatesBB[c] |= rsq;
               if (token == 'K' || token == 'Q')
@@ -365,7 +365,7 @@ Position& Position::set(const Variant* v, const string& fenStr, bool isChess960,
       }
 
       // Set castling rights for 960 gating variants
-      if (gating() && castling_enabled())
+      if (gating() && !commit_gates() && castling_enabled())
           for (Color c : {WHITE, BLACK})
               if ((gates(c) & pieces(KING)) && !castling_rights(c) && (!seirawan_gating() || count_in_hand(c, ALL_PIECES) || captures_to_hand()))
               {
@@ -635,7 +635,7 @@ const string Position::fen(bool sfen, bool showPromoted, std::string holdings) c
   }
 
   // pieces in hand
-  if (piece_drops() || seirawan_gating())
+  if (piece_drops() || (seirawan_gating() && !commit_gates()))
   {
       ss << '[';
       if (holdings != "-")
@@ -655,7 +655,7 @@ const string Position::fen(bool sfen, bool showPromoted, std::string holdings) c
   if (can_castle(WHITE_OOO))
       ss << (chess960 ? char('A' + file_of(castling_rook_square(WHITE_OOO))) : 'Q');
 
-  if (gating() && gates(WHITE) && (!seirawan_gating() || count_in_hand(WHITE, ALL_PIECES) || captures_to_hand()))
+  if (gating() && !commit_gates() && gates(WHITE) && (!seirawan_gating() || count_in_hand(WHITE, ALL_PIECES) || captures_to_hand()))
       for (File f = FILE_A; f <= max_file(); ++f)
           if (gates(WHITE) & file_bb(f))
               ss << char('A' + f);
@@ -666,12 +666,12 @@ const string Position::fen(bool sfen, bool showPromoted, std::string holdings) c
   if (can_castle(BLACK_OOO))
       ss << (chess960 ? char('a' + file_of(castling_rook_square(BLACK_OOO))) : 'q');
 
-  if (gating() && gates(BLACK) && (!seirawan_gating() || count_in_hand(BLACK, ALL_PIECES) || captures_to_hand()))
+  if (gating() && !commit_gates() && gates(BLACK) && (!seirawan_gating() || count_in_hand(BLACK, ALL_PIECES) || captures_to_hand()))
       for (File f = FILE_A; f <= max_file(); ++f)
           if (gates(BLACK) & file_bb(f))
               ss << char('a' + f);
 
-  if (!can_castle(ANY_CASTLING) && !(gating() && (gates(WHITE) | gates(BLACK))))
+  if (!can_castle(ANY_CASTLING) && !(gating() && !commit_gates() && (gates(WHITE) | gates(BLACK))))
       ss << '-';
 
   // Counting limit or ep-square

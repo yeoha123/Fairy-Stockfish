@@ -377,6 +377,20 @@ namespace {
         v->capturesToHand = true;
         return v;
     }
+    Variant* musketeer_variant() {
+        Variant* v = chess_variant();
+        v->variantTemplate = "seirawan";
+        v->pieceToCharTable = "PNBRQ.O..........AD..Kpnbrq.o..........ad..k";
+        v->add_piece(ARCHBISHOP, 'a');
+        v->add_piece(CHANCELLOR, 'o');
+        v->add_piece(AMAZON, 'd');
+        v->startFen = "ao******/rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR/AO****** w KQkq - 0 1";
+        v->gating = true;
+        v->seirawanGating = true;
+        v->commitGates = true;
+        v->promotionPieceTypes = {AMAZON, ARCHBISHOP, CHANCELLOR, QUEEN, ROOK, BISHOP, KNIGHT};
+        return v;
+    }
     Variant* minishogi_variant_base() {
         Variant* v = fairy_variant_base();
         v->variantTemplate = "shogi";
@@ -927,6 +941,7 @@ void VariantMap::init() {
     add("sittuyin", sittuyin_variant());
     add("seirawan", seirawan_variant());
     add("shouse", shouse_variant());
+    add("musketeer", musketeer_variant());
     add("minishogi", minishogi_variant());
     add("mini", minishogi_variant());
     add("kyotoshogi", kyotoshogi_variant());

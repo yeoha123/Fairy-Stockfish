@@ -140,6 +140,7 @@ public:
   bool immobility_illegal() const;
   bool gating() const;
   bool seirawan_gating() const;
+  bool commit_gates() const;
   bool cambodian_moves() const;
   Bitboard diagonal_lines() const;
   bool king_pass() const;
@@ -568,6 +569,11 @@ inline bool Position::gating() const {
 inline bool Position::seirawan_gating() const {
   assert(var != nullptr);
   return var->seirawanGating;
+}
+
+inline bool Position::commit_gates() const {
+  assert(var != nullptr);
+  return var->commitGates;
 }
 
 inline bool Position::cambodian_moves() const {

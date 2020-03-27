@@ -85,6 +85,7 @@ struct Variant {
   bool immobilityIllegal = false;
   bool gating = false;
   bool seirawanGating = false;
+  bool commitGates = false;
   bool cambodianMoves = false;
   Bitboard diagonalLines = 0;
   bool kingPass = false;
