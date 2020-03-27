@@ -71,7 +71,7 @@ endif
 
 ### 2.1. General and architecture defaults
 largeboards = no
-precomputedmagics = yes
+precomputedmagics = no
 optimize = yes
 debug = no
 sanitize = no
