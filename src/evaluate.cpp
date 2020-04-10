@@ -159,6 +159,20 @@ namespace {
   constexpr Score TrappedRook        = S( 52, 10);
   constexpr Score WeakQueen          = S( 49, 15);
 
+  Score sctf = make_score(4000, 4000);
+  Score sctfc = make_score(200, 200);
+  Score s3c = make_score(3600, 1000);
+  Score anti1 = make_score(100, 100);
+  Score anti2 = make_score(200, 200);
+  Score anti3 = make_score(200, 220);
+  Score ext = make_score(1000, 1000);
+  int ext11 = 1000000;
+  int ext12 = 500;
+  int ext21 = 1000000;
+  int ext22 = 500;
+  int ext3 = 5000;
+  TUNE(sctf, sctfc, s3c, anti1, anti2, anti3, ext, ext11, ext12, ext21, ext22, ext3);
+
 #undef S
 
   // Evaluation class computes and stores attacks tables and other working data
@@ -617,7 +631,7 @@ namespace {
     if (pos.must_capture())
     {
         // Penalties for possible captures
-        score -= make_score(100, 100) * popcount(attackedBy[Us][ALL_PIECES] & pos.pieces(Them));
+        score -= anti1 * popcount(attackedBy[Us][ALL_PIECES] & pos.pieces(Them));
 
         // Bonus if we threaten to force captures
         Bitboard moves = 0, piecebb = pos.pieces(Us);
@@ -627,8 +641,8 @@ namespace {
             if (type_of(pos.piece_on(s)) != KING)
                 moves |= pos.moves_from(Us, type_of(pos.piece_on(s)), s);
         }
-        score += make_score(200, 200) * popcount(attackedBy[Them][ALL_PIECES] & moves & ~pos.pieces());
-        score += make_score(200, 220) * popcount(attackedBy[Them][ALL_PIECES] & moves & ~pos.pieces() & ~attackedBy2[Us]);
+        score += anti2 * popcount(attackedBy[Them][ALL_PIECES] & moves & ~pos.pieces());
+        score += anti3 * popcount(attackedBy[Them][ALL_PIECES] & moves & ~pos.pieces() & ~attackedBy2[Us]);
     }
 
     // Extinction threats
@@ -640,7 +654,7 @@ namespace {
             PieceType pt = type_of(pos.piece_on(pop_lsb(&bExt)));
             int denom = std::max(pos.count_with_hand(Them, pt) - pos.extinction_piece_count(), 1);
             if (pos.extinction_piece_types().find(pt) != pos.extinction_piece_types().end())
-                score += make_score(1000, 1000) / (denom * denom);
+                score += ext / (denom * denom);
         }
     }
 
@@ -884,7 +898,7 @@ namespace {
     Score score = make_score(bonus * weight * weight / 16, 0);
 
     if (pos.capture_the_flag(Us))
-        score += make_score(200, 200) * popcount(behind & safe & pos.capture_the_flag(Us));
+        score += sctfc * popcount(behind & safe & pos.capture_the_flag(Us));
 
     if (T)
         Trace::add(SPACE, Us, score);
@@ -894,7 +908,6 @@ namespace {
 
 
   // Evaluation::variant() computes variant-specific evaluation bonuses for a given side.
-
   template<Tracing T> template<Color Us>
   Score Evaluation<T>::variant() const {
 
@@ -917,7 +930,7 @@ namespace {
         {
             int wins = popcount(ctfTargets & ctfPieces);
             if (wins)
-                score += make_score(4000, 4000) * wins / (wins + dist * dist);
+                score += sctf * wins / (wins + dist * dist);
             Bitboard current = ctfPieces & ~ctfTargets;
             processed |= ctfPieces;
             ctfPieces = onHold & ~processed;
@@ -940,7 +953,7 @@ namespace {
     {
         int remainingChecks = pos.checks_remaining(Us);
         assert(remainingChecks > 0);
-        score += make_score(3600, 1000) / (remainingChecks * remainingChecks);
+        score += s3c / (remainingChecks * remainingChecks);
     }
 
     // Extinction
@@ -951,12 +964,12 @@ namespace {
             {
                 int denom = std::max(pos.count(Us, pt) - pos.extinction_piece_count(), 1);
                 if (pos.count(Them, pt) >= pos.extinction_opponent_piece_count() || pos.two_boards())
-                    score += make_score(1000000 / (500 + PieceValue[MG][pt]),
-                                        1000000 / (500 + PieceValue[EG][pt])) / (denom * denom)
+                    score += make_score(ext11 / (ext12 + PieceValue[MG][pt]),
+                                        ext21 / (ext22 + PieceValue[EG][pt])) / (denom * denom)
                             * (pos.extinction_value() / VALUE_MATE);
             }
             else if (pos.extinction_value() == VALUE_MATE && !pos.count<KING>(Us))
-                score += make_score(5000, pos.non_pawn_material(Us)) / pos.count<ALL_PIECES>(Us);
+                score += make_score(ext3, pos.non_pawn_material(Us)) / pos.count<ALL_PIECES>(Us);
     }
 
     // Connect-n
