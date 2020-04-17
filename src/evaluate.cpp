@@ -542,6 +542,14 @@ namespace {
             }
     }
 
+    // Virtual piece drops
+    if (pos.captures_to_hand() && pos.piece_drops())
+    {
+        for (PieceType pt : pos.piece_types())
+            if (!pos.count_in_hand(Them, pt) && (attackedBy[Them][ALL_PIECES] & pos.pieces(Us, pt)) && (attacks_bb(Us, pt, ksq, pos.pieces()) & safe & pos.drop_region(Them, pt) & ~pos.pieces()))
+                kingDanger += OtherSafeCheck * 500 / (500 + PieceValue[MG][pt]);
+    }
+
     if (pos.check_counting())
         kingDanger += kingDanger * 7 / (3 + pos.checks_remaining(Them));
 
