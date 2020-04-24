@@ -575,7 +575,7 @@ namespace {
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)
-        score -= make_score(std::min(kingDanger * kingDanger / 4096, 3000), kingDanger / 16);
+        score -= make_score(std::min(kingDanger, 4000) * kingDanger / 4096, kingDanger / 16);
 
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & kingFlank))
