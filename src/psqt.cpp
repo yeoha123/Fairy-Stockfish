@@ -186,6 +186,10 @@ void init(const Variant* v) {
       else if (v->bareKingValue == VALUE_MATE)
           score = -make_score(mg_value(score) / 8, eg_value(score) / 8 / (1 + !pi->sliderCapture.size()));
 
+      // No pawn promotion
+      if (pt == PAWN && v->promotionRank == RANK_1 && v->mandatoryPawnPromotion)
+          score -= score / 10;
+
       for (Square s = SQ_A1; s <= SQ_MAX; ++s)
       {
           File f = std::max(std::min(file_of(s), File(v->maxFile - file_of(s))), FILE_A);
