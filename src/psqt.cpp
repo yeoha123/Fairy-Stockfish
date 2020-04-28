@@ -186,6 +186,9 @@ void init(const Variant* v) {
       else if (v->bareKingValue == VALUE_MATE)
           score = -make_score(mg_value(score) / 8, eg_value(score) / 8 / (1 + !pi->sliderCapture.size()));
 
+      if (v->sittuyinPromotion && v->promotionLimit[pt] == 1)
+          score -= make_score(0, eg_value(score)) / 5;
+
       for (Square s = SQ_A1; s <= SQ_MAX; ++s)
       {
           File f = std::max(std::min(file_of(s), File(v->maxFile - file_of(s))), FILE_A);
