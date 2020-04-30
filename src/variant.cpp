@@ -857,7 +857,7 @@ namespace {
         v->remove_piece(FERS);
         v->remove_piece(CANNON);
         v->remove_piece(ELEPHANT);
-        v->add_piece(WAZIR, 'a');
+        v->add_piece(COMMONER, 'a');
         v->add_piece(JANGGI_CANNON, 'c');
         v->add_piece(JANGGI_ELEPHANT, 'b', 'e');
         v->startFen = "rnba1abnr/4k4/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/4K4/RNBA1ABNR w - - 0 1";
@@ -867,8 +867,9 @@ namespace {
         Bitboard black_castle = make_bitboard(SQ_D8, SQ_E8, SQ_F8,
                                               SQ_D9, SQ_E9, SQ_F9,
                                               SQ_D10, SQ_E10, SQ_F10);
-        v->mobilityRegion[WHITE][WAZIR] = white_castle;
-        v->mobilityRegion[BLACK][WAZIR] = black_castle;
+        v->mobilityRegion[WHITE][COMMONER] = white_castle;
+        v->mobilityRegion[BLACK][COMMONER] = black_castle;
+        v->kingType = KING;
         v->soldierPromotionRank = RANK_1;
         v->flyingGeneral = false;
         v->bikjangValue = VALUE_MATE;
